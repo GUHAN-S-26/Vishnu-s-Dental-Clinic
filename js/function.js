@@ -61,7 +61,58 @@
                 prependTo: ".responsive-menu",
                 label: ""
             });
+            return;
         }
+
+        var menu = document.querySelector("#menu");
+        var toggleHost = document.querySelector(".navbar-toggle");
+        var responsiveHost = document.querySelector(".responsive-menu");
+
+        if (!menu || !toggleHost || !responsiveHost) {
+            return;
+        }
+
+        // Build a lightweight fallback menu so mobile nav works without jQuery plugins.
+        var button = document.createElement("button");
+        button.type = "button";
+        button.className = "mobile-menu-btn";
+        button.setAttribute("aria-expanded", "false");
+        button.setAttribute("aria-label", "Toggle navigation menu");
+        button.innerHTML = "<span></span><span></span><span></span>";
+
+        var panel = document.createElement("div");
+        panel.className = "fallback-mobile-menu";
+
+        var menuClone = menu.cloneNode(true);
+        menuClone.removeAttribute("id");
+        panel.appendChild(menuClone);
+
+        toggleHost.innerHTML = "";
+        responsiveHost.innerHTML = "";
+        toggleHost.appendChild(button);
+        responsiveHost.appendChild(panel);
+
+        button.addEventListener("click", function () {
+            var isOpen = button.classList.toggle("is-open");
+            responsiveHost.classList.toggle("is-open", isOpen);
+            button.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+
+        responsiveHost.addEventListener("click", function (event) {
+            if (event.target.tagName === "A") {
+                button.classList.remove("is-open");
+                responsiveHost.classList.remove("is-open");
+                button.setAttribute("aria-expanded", "false");
+            }
+        });
+
+        window.addEventListener("resize", function () {
+            if (window.innerWidth > 991) {
+                button.classList.remove("is-open");
+                responsiveHost.classList.remove("is-open");
+                button.setAttribute("aria-expanded", "false");
+            }
+        });
     }
 
     function initGalleryPopup() {
